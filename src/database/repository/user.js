@@ -1,17 +1,14 @@
-const { db } = require("..")
-const User = require("../model/user")
-
+const { userModel } = require("../model/user")
 
 const userRepository = {
     createUser: async (user) => {
-        return await User.create(user)
+        return await userModel.create(user)
     },
     getByEmail: async (email) => {
-        return await User.findOne({
-            where: {
-                email: email
-            }
-        })
+        return await userModel.where({ email: email }).findOne();
+    },
+    update: async (id, user) => {
+        return await userModel.findByIdAndUpdate(id, user)
     }
 }
 

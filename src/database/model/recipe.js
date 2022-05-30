@@ -1,39 +1,32 @@
-const {Sequelize, DataTypes} = require('sequelize');
-const { db } = require('..');
-const uuid = require('uuid')
+const { default: mongoose } = require('mongoose');
 
-const Recipe = db.define('recipes', {
-    recipeId: {
-        type: DataTypes.UUID,
-        primaryKey: true,
-    },
+const recipeSchema = mongoose.Schema({
     userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+        type: mongoose.ObjectId,
+        required: true,
     },
     name: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     description: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: String,
+        required: false,
     },
     ingredients: {
-        type: DataTypes.TEXT,
-        allowNull: false,
+        type: [String],
+        required: true,
     },
     steps: {
-        type: DataTypes.TEXT,
-        allowNull: false,
+        type: [String],
+        required: true,
     }
+
 }, {
-    timestamps: true,
-    hooks: {
-        beforeCreate: (recipe) => {
-            recipe.recipeId = uuid.v4()
-        }
-    }
+    collection: 'recipes',
+    timestamps: true
 })
 
-module.exports = Recipe;
+module.exports = {
+    recipeModel: mongoose.model('Recipe', recipeSchema),
+};

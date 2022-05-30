@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { unauthorizedResponse } = require('../utils/helpers');
 const Authorization = (req, res, next) => {
     const authHeader = req.get('Authorization');
     if (!authHeader) {
@@ -17,9 +18,7 @@ const Authorization = (req, res, next) => {
             req.userId = decoded.id;
             next();
         } catch (error) {
-            res.status(401).json({
-                message: "Unauthorized"
-            });  
+            res.status(401).json(unauthorizedResponse());  
         }
     }
 }

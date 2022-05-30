@@ -1,53 +1,45 @@
 const User = require("../database/model/user");
 const userRepository = require("../database/repository/user");
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { createResponse } = require("../utils/helpers");
 
 const authController = {
     registerUser: async (req, res) => {
-        const { email, password } = req.body;
+        const { email, password, name } = req.body;
     
         let user = await userRepository.getByEmail(email);
         if (user) {
-            return res.status(400).json({
-                message: "User already exist"
-            })
+            return res.status(400).json(createResponse('User already exist', 400, null));
         }
         
         const salt = await bcrypt.genSalt();
         const hash = await bcrypt.hash(password, salt);
         user = await userRepository.createUser({
             email: email,
-            password: hash
+            password: hash,
+            name: name
         })
 
-        return res.status(200).json({
-            message: "User created successfully",
-            data: user
-        });
+        return res.status(200).json(createResponse('User created successfully', 200, user));
     },
     login: async (req, res) => {
         const {email, password} = req.body;
         let user = await userRepository.getByEmail(email);
         if (!user) {
-            return res.status(400).json({
-                message: "User not found"
-            })
+            return res.status(400).json(createResponse('User not found', 400, null));
         }
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) { 
-            return res.status(400).json({
-                message: "Incorrect password"
-            })
+            return res.status(400).json(createResponse('Invalid password', 400, null));
         }
         const token = jwt.sign({
-            id: user.userId,
+            id: user._id,
         }, "SecretJWTRosaliaAbadi")
 
-        return res.status(200).json({
-            message: "Login successful",
-            token:token
-        })
+        return res.status(200).json(createResponse('Login success', 200, {
+            token: token,
+        }));
     }
 }
 // 

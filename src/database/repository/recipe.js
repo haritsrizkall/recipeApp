@@ -1,17 +1,21 @@
-const { db } = require("..")
-const Recipe = require("../model/recipe")
+const { recipeModel } = require("../model/recipe")
 
 
 const recipeRepository = {
     createRecipe: async (recipe) => {
-        return await Recipe.create(recipe)
+        return await recipeModel.create(recipe)
+    },
+    getById: async (id) => {
+        return await recipeModel.findById(id);
     },
     getRecipeByUserID: async (userId) => {
-        return await Recipe.findAll({
-            where: {
-                userId: userId
-            }
-        })
+        return await recipeModel.where({ userId: userId }).find()
+    },
+    delete: async (id) => {
+        return await recipeModel.findByIdAndDelete(id)
+    },
+    update: async (id, recipe) => {
+        return await recipeModel.updateOne({ _id: id }, recipe)
     }
 }
 
